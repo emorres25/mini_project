@@ -10,6 +10,9 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 
 verify_token = '8510865767'
+VERIFY_TOKEN = verify_token
+access_token = 'EAABkitQTatQBAPosC3d3O4d6dBRWC95mCuhHFfZCReaiqw3wZC1N36bktjjGyjyE6g1ve2ZBekHHo6hX6ZCOhHIwLZAd7lhQ9zaviSL6UVjp3eYu0un6swliknSPBuSAeFukSdQvcChdoiDEhCxhnJOuUmqRD39D7YJZAp1sDMfwZDZD'
+ACCESS_TOKEN = access_token
  
 def get_joke(fbid, recevied_message):
     joke_text = requests.get("http://api.icndb.com/jokes/random/").json()['value']['joke']
@@ -37,3 +40,10 @@ class jokebot(generic.View):
                 if 'message' in message: 
                     get_joke(message['sender']['id'], message['message']['text'])    
         return HttpResponse()
+
+class BotView(generic.View):
+    def get(self, request, *args, **kwargs):
+        if self.request.GET['hub.verify_token'] == VERIFY_TOKEN:
+            return HttpResponse(self.request.GET['hub.challenge'])
+        else:
+            return HttpResponse('Error, invalid token')
